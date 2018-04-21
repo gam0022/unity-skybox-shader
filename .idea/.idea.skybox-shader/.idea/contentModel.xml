@@ -12,9 +12,9 @@
             </e>
           </e>
         </e>
-        <e p="Scenes" t="Include">
+        <e p="Skybox" t="Include">
           <e p="FreeCam.cs" t="Include" />
-          <e p="Skybox.shader" t="Include" />
+          <e p="SkyboxGrid.shader" t="Include" />
         </e>
       </e>
       <e p="Library" t="ExcludeRecursive" />

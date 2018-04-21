@@ -1,20 +1,15 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Skybox/Horizontal Skybox"
+﻿Shader "Skybox/Grid"
 {
     Properties
     {
-        _Color1 ("Top Color", Color) = (1, 1, 1, 0)
-        _Color2 ("Horizon Color", Color) = (1, 1, 1, 0)
-        _Color3 ("Bottom Color", Color) = (1, 1, 1, 0)
-        _Exponent1 ("Exponent Factor for Top Half", Float) = 1.0
-        _Exponent2 ("Exponent Factor for Bottom Half", Float) = 1.0
         _Intensity ("Intensity Amplifier", Float) = 1.0
     }
 
     CGINCLUDE
 
     #include "UnityCG.cginc"
+    
+    #define PI 3.141592653589793
 
     struct appdata
     {
@@ -28,12 +23,7 @@ Shader "Skybox/Horizontal Skybox"
         float3 texcoord : TEXCOORD0;
     };
     
-    half4 _Color1;
-    half4 _Color2;
-    half4 _Color3;
     half _Intensity;
-    half _Exponent1;
-    half _Exponent2;
     
     v2f vert (appdata v)
     {
@@ -45,11 +35,13 @@ Shader "Skybox/Horizontal Skybox"
     
     half4 frag (v2f i) : COLOR
     {
-        float p = normalize (i.texcoord).y;
-        float p1 = 1.0f - pow (min (1.0f, 1.0f - p), _Exponent1);
-        float p3 = 1.0f - pow (min (1.0f, 1.0f + p), _Exponent2);
-        float p2 = 1.0f - p1 - p3;
-        return (_Color1 * p1 + _Color2 * p2 + _Color3 * p3) * _Intensity;
+        float u = atan2(i.texcoord.z, i.texcoord.x) / PI;
+        float v = acos(i.texcoord.y) / PI;
+        float uu = abs(frac(u * 20) - 0.5);
+        float vv = abs(frac(v * 20) - 0.5);
+        float a = 0.01 / uu + 0.01 / vv;
+        a *= _Intensity;
+        return half4(a, a, a, 1.0);
     }
 
     ENDCG
